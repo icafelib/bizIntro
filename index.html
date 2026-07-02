@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppVerse — Productivity & Lifestyle Apps</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #050d1a;
+      --surface: #0b1730;
+      --card: #0f2040;
+      --border: #1a3a6a;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --text: #e2e8f0;
+      --muted: #8899aa;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 6%;
+      background: rgba(5,13,26,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 32px; }
+
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── Language switcher ── */
+    .lang-switcher {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: background .2s, color .2s;
+      letter-spacing: .3px;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .lang-btn:hover:not(.active) { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 110px 6% 80px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      margin-bottom: 22px;
+      padding: 6px 18px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      font-size: .78rem;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 22px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      max-width: 560px;
+      margin: 0 auto 40px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .hero-cta { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .2s;
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-2px); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 30px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      background: transparent;
+      transition: border-color .2s, color .2s, transform .2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* ── STATS ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      padding: 48px 6%;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── SECTION HEADINGS ── */
+    section { position: relative; z-index: 1; padding: 80px 6%; }
+
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      font-size: .75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .section-header h2 {
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      font-weight: 700;
+    }
+    .section-header p { color: var(--muted); margin-top: 12px; font-size: .95rem; }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,212,255,.12);
+    }
+
+    .product-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 18px;
+    }
+
+    .product-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .product-card p { color: var(--muted); font-size: .9rem; line-height: 1.6; margin-bottom: 18px; }
+
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      font-size: .72rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: .3px;
+    }
+    .badge.ios { border-color: #3b82f6; color: #3b82f6; }
+    .badge.android { border-color: #22c55e; color: #22c55e; }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: border-color .3s;
+    }
+    .feature-card:hover { border-color: var(--accent2); }
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; }
+    .feature-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { color: var(--muted); font-size: .88rem; }
+
+    /* ── DOWNLOAD CTA ── */
+    .download-section {
+      background: linear-gradient(135deg, rgba(0,212,255,.07), rgba(124,58,237,.07));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      text-align: center;
+      padding: 64px 6%;
+      margin: 0 6%;
+    }
+    .download-section h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 16px; }
+    .download-section p { color: var(--muted); margin-bottom: 36px; }
+
+    .store-btns { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 26px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: border-color .2s, transform .2s;
+    }
+    .store-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .store-btn-icon { font-size: 1.5rem; }
+    .store-btn small { display: block; font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 6%;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* ── Glow orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: .18;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: 100px; right: -80px; }
+
+    /* ── i18n hidden ── */
+    [data-lang] { display: none; }
+    .lang-en [data-lang="en"],
+    .lang-zh [data-lang="zh"] { display: inline; }
+    .lang-en [data-lang-block="en"],
+    .lang-zh [data-lang-block="zh"] { display: block; }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .stats { gap: 28px; }
+    }
+  </style>
+</head>
+<body class="lang-en">
+
+  <!-- Glow orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">AppVerse</div>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#products"><span data-lang="en">Products</span><span data-lang="zh">产品</span></a></li>
+        <li><a href="#features"><span data-lang="en">Features</span><span data-lang="zh">特性</span></a></li>
+        <li><a href="#download"><span data-lang="en">Download</span><span data-lang="zh">下载</span></a></li>
+      </ul>
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('zh')">中</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span data-lang="en">Next-Gen Productivity Apps</span>
+      <span data-lang="zh">新一代效率应用</span>
+    </div>
+    <h1>
+      <span data-lang-block="en">
+        Build Better.<br/>
+        <span class="gradient-text">Live Smarter.</span>
+      </span>
+      <span data-lang-block="zh" style="display:none">
+        效率升级<br/>
+        <span class="gradient-text">智慧生活</span>
+      </span>
+    </h1>
+    <p>
+      <span data-lang="en">We craft powerful apps that boost productivity and enrich everyday life — available on iOS &amp; Android.</span>
+      <span data-lang="zh">我们打造功能强大的应用，提升工作效率、丰富日常生活，支持 iOS 和 Android 下载。</span>
+    </p>
+    <div class="hero-cta">
+      <a href="#products" class="btn-primary">
+        <span data-lang="en">Explore Products</span>
+        <span data-lang="zh">浏览产品</span>
+        →
+      </a>
+      <a href="#download" class="btn-outline">
+        <span data-lang="en">Download Now</span>
+        <span data-lang="zh">立即下载</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">10M+</div>
+      <div class="stat-label"><span data-lang="en">Downloads</span><span data-lang="zh">下载量</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">50+</div>
+      <div class="stat-label"><span data-lang="en">Countries</span><span data-lang="zh">覆盖国家</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.8★</div>
+      <div class="stat-label"><span data-lang="en">Avg. Rating</span><span data-lang="zh">平均评分</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label"><span data-lang="en">Apps</span><span data-lang="zh">款应用</span></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="section-header">
+      <div class="section-tag"><span data-lang="en">Our Products</span><span data-lang="zh">产品矩阵</span></div>
+      <h2><span data-lang="en">Apps Built for Real Life</span><span data-lang="zh">为真实需求而生</span></h2>
+      <p><span data-lang="en">From task management to wellness — we have an app for every need.</span><span data-lang="zh">从任务管理到健康生活，每一个需求都有对应的解决方案。</span></p>
+    </div>
+    <div class="product-grid">
+
+      <!-- Card 1 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#0ea5e9,#6366f1)">⚡</div>
+        <h3>FocusFlow</h3>
+        <p><span data-lang="en">AI-powered task manager with smart scheduling and deep work modes.</span><span data-lang="zh">AI 驱动的任务管理，智能排期与深度专注模式。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Productivity</span><span data-lang="zh">效率</span></span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#10b981,#0d9488)">📓</div>
+        <h3>NoteSync</h3>
+        <p><span data-lang="en">Cross-device note-taking with real-time sync, tags, and rich text.</span><span data-lang="zh">多设备实时同步笔记，支持标签与富文本编辑。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Notes</span><span data-lang="zh">笔记</span></span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">💰</div>
+        <h3>BudgetWise</h3>
+        <p><span data-lang="en">Smart expense tracking and financial planning at your fingertips.</span><span data-lang="zh">智能收支追踪与财务规划，掌控每一分钱。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Finance</span><span data-lang="zh">财务</span></span>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">🧘</div>
+        <h3>MindSpace</h3>
+        <p><span data-lang="en">Guided meditation, sleep sounds, and daily wellness routines.</span><span data-lang="zh">冥想引导、睡眠音频与每日健康习惯养成。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Wellness</span><span data-lang="zh">健康</span></span>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">📊</div>
+        <h3>DataBoard</h3>
+        <p><span data-lang="en">Personal analytics dashboard — habits, goals, and progress at a glance.</span><span data-lang="zh">个人数据看板，一目了然地追踪习惯、目标与进展。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Analytics</span><span data-lang="zh">数据分析</span></span>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="product-card">
+        <div class="product-icon" style="background:linear-gradient(135deg,#f97316,#eab308)">🌐</div>
+        <h3>TeamLink</h3>
+        <p><span data-lang="en">Lightweight team collaboration — channels, tasks, and file sharing.</span><span data-lang="zh">轻量级团队协作，支持频道、任务与文件共享。</span></p>
+        <div class="badge-row">
+          <span class="badge ios">iOS</span>
+          <span class="badge android">Android</span>
+          <span class="badge"><span data-lang="en">Collaboration</span><span data-lang="zh">协作</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-tag"><span data-lang="en">Why Choose Us</span><span data-lang="zh">为什么选择我们</span></div>
+      <h2><span data-lang="en">Built Different</span><span data-lang="zh">与众不同</span></h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h4><span data-lang="en">Privacy First</span><span data-lang="zh">隐私优先</span></h4>
+        <p><span data-lang="en">End-to-end encryption on all sensitive data.</span><span data-lang="zh">所有敏感数据端到端加密保护。</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h4><span data-lang="en">Cross-Platform</span><span data-lang="zh">跨平台同步</span></h4>
+        <p><span data-lang="en">Seamless experience across iOS, Android, and web.</span><span data-lang="zh">iOS、Android 与网页端无缝体验。</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h4><span data-lang="en">AI-Powered</span><span data-lang="zh">AI 赋能</span></h4>
+        <p><span data-lang="en">Smart suggestions and automation built in every app.</span><span data-lang="zh">每款应用内置智能推荐与自动化功能。</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h4><span data-lang="en">Offline Mode</span><span data-lang="zh">离线可用</span></h4>
+        <p><span data-lang="en">Full functionality even without internet connection.</span><span data-lang="zh">无网络环境下依然全功能可用。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download" style="padding-top: 0; padding-bottom: 80px;">
+    <div class="download-section">
+      <h2>
+        <span data-lang="en">Ready to Get Started?</span>
+        <span data-lang="zh">准备好了吗？</span>
+      </h2>
+      <p>
+        <span data-lang="en">Download any of our apps for free on iOS and Android.</span>
+        <span data-lang="zh">在 iOS 和 Android 平台免费下载我们的应用。</span>
+      </p>
+      <div class="store-btns">
+        <a href="#" class="store-btn">
+          <span class="store-btn-icon"></span>
+          <div>
+            <small><span data-lang="en">Download on the</span><span data-lang="zh">下载于</span></small>
+            <strong>App Store</strong>
+          </div>
+        </a>
+        <a href="#" class="store-btn">
+          <span class="store-btn-icon">▶</span>
+          <div>
+            <small><span data-lang="en">Get it on</span><span data-lang="zh">下载于</span></small>
+            <strong>Google Play</strong>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo" style="font-size:1.1rem;margin-bottom:10px;">AppVerse</div>
+    <p style="margin-bottom:6px;">
+      <span data-lang="en">© 2026 AppVerse. All rights reserved.</span>
+      <span data-lang="zh">© 2026 AppVerse 版权所有</span>
+    </p>
+    <p style="font-size:.8rem;">
+      <span data-lang="en">Productivity &bull; Wellness &bull; Finance &bull; Collaboration</span>
+      <span data-lang="zh">效率 &bull; 健康 &bull; 财务 &bull; 协作</span>
+    </p>
+  </footer>
+
+  <script>
+    function setLang(lang) {
+      document.body.className = 'lang-' + lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang ||
+          (lang === 'zh' && btn.textContent.trim() === '中'));
+      });
+      // Fix active detection for EN/中
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        const t = btn.textContent.trim();
+        btn.classList.remove('active');
+        if (lang === 'en' && t === 'EN') btn.classList.add('active');
+        if (lang === 'zh' && t === '中') btn.classList.add('active');
+      });
+    }
+  </script>
+</body>
+</html>
